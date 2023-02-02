@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贵港市</title>
+
+    <script src="../Build/Cesium/Cesium.js"></script>
+    <link rel="stylesheet" href="../Build/Cesium/Widgets/widgets.css">
+    <link rel="stylesheet" href="../css/cebian.css">
+
+    <style>
+        .cesium-widget-credits{
+            display: none !important; 
+        }
+    </style>
+
+</head>
+<body>
+    <!-- 侧边功能栏 -->
+    <div class="wrap" >
+        <!-- <div class="header">灾害分析</div> -->
+        <div class="nav">
+            <ul class="list">
+                
+                <li class="list">
+                    <h2><i></i>滑坡分析</h2>
+                    <div class="hide">
+                        
+                    </div>
+                </li>
+                <li class="list">
+                    <h2><i></i>崩塌分析</h2>
+                    <div class="hide">
+                        
+                    </div>
+                </li>
+                <li class="list">
+                    <h2><i></i>泥石流分析</h2>
+                    <div class="hide">
+                       
+                    </div>
+                </li>
+                <li class="list">
+                    <h2><i></i>洪水淹没分析</h2>
+                    <div class="hide">
+                        
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- 侧边栏JS函数 -->
+    <script src="../src/侧边栏.js"></script>
+    <script>
+    //侧边栏
+        Sidebar();
+    </script>
+
+    <!-- Cesium地球 -->
+    <div id="cesiumContainer" style="width: 100%; height: 100%;"></div>
+    <script type="text/javascript" src="../src/底图.js"></script>
+    <script src="../src/相机系统.js"></script>
+    <script src="../src/扩散圆.js"></script>
+    <!-- <script src="../src/刻度盘.js"></script> -->
+    <script>
+        //密匙
+        Cesium.Ion.defaultAccessToken='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJjNDJjYmFlZS1hODI1LTRlM2ItOWEwNS1kNGQyNTg5MzljNGUiLCJpZCI6MTEwMTEwLCJpYXQiOjE2NjQ5NDE4Mjh9.-KK_gEJpLbJ0NzyyFUNmAQPojinxw06PR0bkHOxQbXM'
+        var viewer = new Cesium.Viewer("cesiumContainer",{
+            //搜索框、Home键、场景控制、基础图层选择、导航帮助、播放控制键、时间轴、Cesium版权、全屏
+            geocoder:true,
+            homeButton:false,
+            sceneModePicker:false,
+            baseLayerPicker:false,
+            navigationHelpButton:false,
+            animation:false,
+            timeline:false,
+            creditDisplay:false,
+            fullscreenButton:true,
+            
+
+            terrainProvider: new Cesium.CesiumTerrainProvider({
+                url: "http://localhost:8090",
+            }),
+
+            // imageryProvider: new Cesium.UrlTemplateImageryProvider({
+            //     url:"https://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetGray/MapServer/tile/{z}/{y}/{x}",
+            //     minimumlevel:1,
+            //     maximumlevel:18
+            // }),
+        
+        });
+         
+        //添加底图
+        baseLayer();
+        //相机系统 setView直接切换视角
+        cameraview();
+      
+        // // 圆扩散
+        // const circleDiffusion = new CircleDiffusion(this.viewer);
+        // circleDiffusion.add([109.60, 23.10, 200000], "#F7EB08", 800, 9500);
+
+        // 扩散圆特效
+        function diffusion(){
+
+            this.viewer.entities.add({
+                position: Cesium.Cartesian3.fromDegrees(109.60, 23.10),
+                name: "扩散圆",
+                ellipse: {
+                    semiMinorAxis: 1000.0,
+                    semiMajorAxis: 1000.0,
+                    material: new Cesium.CircleDiffuseMaterialProperty({
+                        color: new Cesium.Color(1, 1, 0, 0.7),
+                        speed: 12.0,
+                    })
+                }
+            })
+            this.viewer.entities.add({
+                position: Cesium.Cartesian3.fromDegrees(110.34979089605072 ,23.77775197454885),
+                name: "官成镇",
+                ellipse: {
+                    semiMinorAxis: 1000.0,
+                    semiMajorAxis: 1000.0,
+                    material: new Cesium.CircleDiffuseMaterialProperty({
+                        color: new Cesium.Color(2, 1, 0, 0.7),
+                        speed: 12.0,
+                    })
+                }
+            })
+            this.viewer.entities.add({
+                position: Cesium.Cartesian3.fromDegrees(110.3994763344437 ,23.830841682948915),
+                name: "同和镇",
+                ellipse: {
+                    semiMinorAxis: 1000.0,
+                    semiMajorAxis: 1000.0,
+                    material: new Cesium.CircleDiffuseMaterialProperty({
+                        color: new Cesium.Color(2, 1, 0, 0.7),
+                        speed: 12.0,
+                    })
+                }
+            })
+            this.viewer.entities.add({
+                position: Cesium.Cartesian3.fromDegrees(110.34051500734692, 23.89846497643343),
+                name: "马练瑶族乡",
+                ellipse: {
+                    semiMinorAxis: 1000.0,
+                    semiMajorAxis: 1000.0,
+                    material: new Cesium.CircleDiffuseMaterialProperty({
+                        color: new Cesium.Color(2, 1, 0, 0.7),
+                        speed: 12.0,
+                    })
+                }
+            })
+            this.viewer.entities.add({
+                position: Cesium.Cartesian3.fromDegrees(110.25521429997086, 23.850374030910245),
+                name: "国安瑶族乡",
+                ellipse: {
+                    semiMinorAxis: 1000.0,
+                    semiMajorAxis: 1000.0,
+                    material: new Cesium.CircleDiffuseMaterialProperty({
+                        color: new Cesium.Color(2, 1, 0, 0.7),
+                        speed: 12.0,
+                    })
+                }
+            })
+            this.viewer.entities.add({
+                position: Cesium.Cartesian3.fromDegrees(109.99786885817257, 23.411252769562022),
+                name: "南木镇",
+                ellipse: {
+                    semiMinorAxis: 1000.0,
+                    semiMajorAxis: 1000.0,
+                    material: new Cesium.CircleDiffuseMaterialProperty({
+                        color: new Cesium.Color(2, 1, 0, 0.7),
+                        speed: 12.0,
+                    })
+                }
+            })
+        }
+
+        
+    </script>
+
+</body>
+</html>

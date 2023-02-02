@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贵港市矢量图</title>
+
+    <script src="../Build/Cesium/Cesium.js"></script>
+    <link rel="stylesheet" href="../Build/Cesium/Widgets/widgets.css">
+
+    <style>
+        *{
+            padding: 0;
+            margin:0;
+        }
+        .btn{
+            height: 50px;
+            width: 100px;
+            background-color: aqua;
+            position:absolute;
+            z-index: 99;
+        }
+        .cesium-widget-credits{
+            display: none !important; 
+        }
+    </style>
+</head>
+<body>
+    <div id="cesiumContainer"></div>
+    <button onclick="change()" class="btn">切换地图</button>
+    <script src="../src/底图.js"></script>
+    <script src="../src/相机系统.js"></script>
+    <script src="../src/高亮效果.js"></script>
+    <script>
+        Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJjNDJjYmFlZS1hODI1LTRlM2ItOWEwNS1kNGQyNTg5MzljNGUiLCJpZCI6MTEwMTEwLCJpYXQiOjE2NjQ5NDE4Mjh9.-KK_gEJpLbJ0NzyyFUNmAQPojinxw06PR0bkHOxQbXM'
+        var viewer = new Cesium.Viewer("cesiumContainer",{
+            geocoder:true,
+            homeButton:false,
+            sceneModePicker:false,
+            baseLayerPicker:false,
+            navigationHelpButton:false,
+            animation:false,
+            timeline:false,
+            creditDisplay:false,
+            fullscreenButton:true,
+            // terrainProvider: new Cesium.CesiumTerrainProvider({
+            //     url: "../dem_切片",
+            // }),
+        })
+        //添加底图
+        shapeBaseLayer();
+        //相机系统
+        cameraview();
+        function moment(){
+            
+        }
+        //切换地图
+        function change(){
+            window.location.href='../src/cesium贵港市.html'
+        }
+        //高亮效果
+        hightlightLine();
+        moment();
+    </script>
+</body>
+</html>

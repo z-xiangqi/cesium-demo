@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cesium 初步界面</title>
+
+    <script src="../Build/Cesium/Cesium.js"></script>
+    <link rel="stylesheet" href="../Build/Cesium/Widgets/widgets.css">
+    <link rel="stylesheet" href="../css/cebian.css">
+    <style>
+        
+        
+        .cesium-widget-credits{
+            display: none !important; 
+        }
+
+       
+    </style>
+</head>
+<body>
+    <div class="wrap" >
+        <!-- <div class="header">灾害分析</div> -->
+        <div class="nav">
+            <ul class="list">
+                
+                <li class="list">
+                    <h2><i></i>滑坡分析</h2>
+                    <div class="hide">
+                        <button onclick="localname();">地名</button>
+                        <button onclick="danger()">危险区</button>
+                    </div>
+                </li>
+                <li class="list">
+                    <h2><i></i>崩塌分析</h2>
+                    <div class="hide">
+                        
+                    </div>
+                </li>
+                <li class="list">
+                    <h2><i></i>泥石流分析</h2>
+                    <div class="hide">
+                       
+                    </div>
+                </li>
+                <li class="list">
+                    <h2><i></i>洪水淹没分析</h2>
+                    <div class="hide">
+                        
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="cesiumcontainer" style="width:100%; height: 100%;"></div>
+
+    <script>
+        (function () {
+            var oList = document.querySelectorAll('.list h2'),
+                oHide = document.querySelectorAll('.hide'),
+                oIcon = document.querySelectorAll('.list i'),
+                lastIndex = 0;
+            for(var i=0;i<oList.length;i++){
+                oList[i].index = i;//自定义属性
+                oList[i].isClick = false;
+                oList[i].initHeight = oHide[i].clientHeight;
+                oHide[i].style.height = '0';
+                oList[i].onclick = function () {
+                    if(this.isClick){
+                        oHide[this.index].style.height = '0';
+                        oIcon[this.index].className = '';
+                        oList[this.index].className = '';
+                        oList[this.index].isClick = false;
+                    }
+                    else{
+                        oHide[lastIndex].style.height = '0';
+                        oIcon[lastIndex].className = '';
+                        oList[lastIndex].className = '';
+                        oHide[this.index].style.height = '220px';
+                        oIcon[this.index].className = 'on';
+                        oList[this.index].className = 'on';
+                        oList[lastIndex].isClick = false;
+                        oList[this.index].isClick = true;
+                        lastIndex = this.index;
+                    }
+                }
+            }
+        })();
+    </script>
+    <script src="./底图.js"></script>
+    <script src="./地名.js"></script>
+    <script src="./高亮效果.js"></script>
+    <script src="./扩散圆.js"></script>
+    <script src="./波动圆.js"></script>
+
+    <script>
+        Cesium.Ion.defaultAccessToken ='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJjNDJjYmFlZS1hODI1LTRlM2ItOWEwNS1kNGQyNTg5MzljNGUiLCJpZCI6MTEwMTEwLCJpYXQiOjE2NjQ5NDE4Mjh9.-KK_gEJpLbJ0NzyyFUNmAQPojinxw06PR0bkHOxQbXM'
+        var viewer =new Cesium.Viewer("cesiumcontainer",{
+            
+            //全部三维
+            //terrainProvider: Cesium.createWorldTerrain(),
+            //搜索框
+            geocoder:true,
+            //home键
+            homeButton:true,
+            //动画控件
+            animation:false,
+            //全屏按钮
+            fullscreenButton:false,
+            //场景模式选择
+            screneModePicker:false,
+            //时间轴
+            timeline:false,
+            //导航提示
+            navigationHelpButton:false,
+            //地图选择器
+            baseLayerPicker:false,
+            inforbox:false,
+            terrainProvider: new Cesium.CesiumTerrainProvider({
+                url: "http://localhost:8090",
+            }),
+
+            //只添加一种地图    
+            // imageryProvider: new Cesium.UrlTemplateImageryProvider({
+            //     url:" http://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
+            //     minimumlevel:1,
+            //     maximumlevel:18
+            // }),
+        })
+
+            // var imaglyser =new Cesium.ImageryLayer(new Cesium.UrlTemplateImageryProvider({
+            //     url:" http://webst01.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}",
+            //         minimumlevel:1,
+            //         maximumlevel:18
+            // }))
+
+            // viewer.imageryLayers.add(imaglyser)
+
+            
+
+        //视角相机设置
+        //直接切换
+        viewer.camera.setView({
+                destination: Cesium.Cartesian3.fromDegrees(109.59, 23.10, 100000), //相机（眼睛）位置 不是地图位置
+                //相机的姿态
+                orientation: {
+                    heading: Cesium.Math.toRadians(0.0), // 朝向
+                    pitch: Cesium.Math.toRadians(-90),  // 俯仰
+                    roll: 0.0              //滚转            
+                }
+            });
+
+        //缓慢切换相机
+        // viewer.camera.flyTo({
+        //         destination: Cesium.Cartesian3.fromDegrees(109.60, 23.10, 100000),
+        //         orientation: {
+        //             heading: Cesium.Math.toRadians(0.0), // 朝向
+        //             pitch: Cesium.Math.toRadians(-90),  // 俯仰
+        //             roll: 0.0              //滚转            
+        //         },
+        //         duration :2
+        // })
+
+    //添加底图
+        baseLayer();
+    //高亮效果
+        //hightlightLine();
+    //添加底图
+        //shapeBaseLayer();
+    //添加地名
+    function localname(){
+            localName();       
+    }
+    function danger(){
+      Cesium.GeoJsonDataSource.load('../data/dangert.json',{
+      stroke: Cesium.Color.WHITE,
+      fill: Cesium.Color.LIGHTPINK.withAlpha(0.5),
+      strokeWidth: 8,
+    }).then(function(dataSource) {
+      this.viewer.dataSources.add(dataSource);
+      let entities = dataSource.entities.values;
+      for (let i = 0; i < entities.length; i++) {
+          let entity = entities[i];
+          //entity.polygon.material = new Cesium.Color(204 / 255, 247 / 255, 217 / 255, 0.6);
+          //entity.polygon.outline = false;
+          // 将高度拉伸至xx米
+          //entity.polygon.extrudedHeight = 2000;
+      }
+    });
+    }
+       
+     //获取坐标   
+    function coordinate(){
+
+        //鼠标点击事件获取世界坐标、经纬度
+        var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);  
+        // canvas要为其创建场景的 HTML 画布元素
+            handler.setInputAction(function (movement) { //返回要在输入事件上执行的函数
+                var ray = this.viewer.camera.getPickRay(movement.position); 
+                //从相机位置通过windowPosition 世界坐标中的像素创建一条射线，
+                //返回射线的Cartesian3位置和方向，如果无法确定拾取射线，则返回未定义。
+                if (!ray) return null;
+                var position = this.viewer.scene.globe.pick(ray, this.viewer.scene);
+                //查找射线与渲染的地球表面之间的交点。射线必须以世界坐标给出
+                console.log(movement.position);
+                console.log(position);
+
+                var cartographic = Cesium.Ellipsoid.WGS84.cartesianToCartographic(position);
+                console.log(cartographic);
+                // Ell初始化wgs84椭圆
+                //cartesianToCartographic将提供的笛卡尔坐标转换为制图表示。（转为弧度）
+
+                //弧度转经纬度
+                var lon = Cesium.Math.toDegrees(cartographic.longitude);
+                var lat = Cesium.Math.toDegrees(cartographic.latitude);
+                console.log(lon,lat);
+            }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+            //创建DataSource
+            var datasource = new Cesium.CustomDataSource("enetiestestdata")
+    }
+            coordinate()
+    //添加信息框
+//     viewer.entities.add({
+//    name: '',
+//    position: Cesium.Cartesian3.fromDegrees(109.60, 23.10),
+//    label: { //文字标签
+//      text: '1号大棚',
+//      font: '500 30px Helvetica',// 15pt monospace
+//      scale: 0.5,
+//      //style: Cesium.LabelStyle.FILL,
+//      fillColor: Cesium.Color.WHITE,
+//      pixelOffset: new Cesium.Cartesian2(0, -70),   //偏移量
+//      showBackground: true,
+//      //backgroundColor: new Cesium.Color(26 / 255, 196 / 255, 228 / 255, 1.0)
+//    },
+//    billboard: { //图标
+//      image: '../data/1(1).png',
+//      width: 50,
+//      height: 100,
+//      pixelOffset: new Cesium.Cartesian2(0, -50),   //偏移量
+//    },
+//  });
+
+
+    
+    // 扩散圆特效
+    function diffusion(){
+
+        // this.viewer.entities.add({
+        //     position: Cesium.Cartesian3.fromDegrees(109.60, 23.10),
+        //     name: "扩散圆",
+        //     ellipse: {
+        //         semiMinorAxis: 1000.0,
+        //         semiMajorAxis: 1000.0,
+        //         material: new Cesium.CircleDiffuseMaterialProperty({
+        //             color: new Cesium.Color(1, 1, 0, 0.7),
+        //             speed: 12.0,
+        //         })
+        //     }
+        // })
+        this.viewer.entities.add({
+            position: Cesium.Cartesian3.fromDegrees(110.34979089605072 ,23.77775197454885),
+            name: "官成镇",
+            ellipse: {
+                semiMinorAxis: 1000.0,
+                semiMajorAxis: 1000.0,
+                material: new Cesium.CircleDiffuseMaterialProperty({
+                    color: new Cesium.Color(2, 2, 0, 0.7),
+                    speed: 12.0,
+                })
+            }
+        })
+        this.viewer.entities.add({
+            position: Cesium.Cartesian3.fromDegrees(110.3994763344437 ,23.830841682948915),
+            name: "同和镇",
+            ellipse: {
+                semiMinorAxis: 1000.0,
+                semiMajorAxis: 1000.0,
+                material: new Cesium.CircleDiffuseMaterialProperty({
+                    color: new Cesium.Color(2, 1, 0, 0.7),
+                    speed: 12.0,
+                })
+            }
+        })
+        this.viewer.entities.add({
+            position: Cesium.Cartesian3.fromDegrees(110.34051500734692, 23.89846497643343),
+            name: "马练瑶族乡",
+            ellipse: {
+                semiMinorAxis: 1000.0,
+                semiMajorAxis: 1000.0,
+                material: new Cesium.CircleDiffuseMaterialProperty({
+                    color: new Cesium.Color(2, 1, 0, 0.7),
+                    speed: 12.0,
+                })
+            }
+        })
+        this.viewer.entities.add({
+            position: Cesium.Cartesian3.fromDegrees(110.25521429997086, 23.850374030910245),
+            name: "国安瑶族乡",
+            ellipse: {
+                semiMinorAxis: 1000.0,
+                semiMajorAxis: 1000.0,
+                material: new Cesium.CircleDiffuseMaterialProperty({
+                    color: new Cesium.Color(2, 1, 0, 0.7),
+                    speed: 12.0,
+                })
+            }
+        })
+        this.viewer.entities.add({
+            position: Cesium.Cartesian3.fromDegrees(109.99786885817257, 23.411252769562022),
+            name: "南木镇",
+            ellipse: {
+                semiMinorAxis: 1000.0,
+                semiMajorAxis: 1000.0,
+                material: new Cesium.CircleDiffuseMaterialProperty({
+                    color: new Cesium.Color(2, 1, 0, 0.7),
+                    speed: 12.0,
+                })
+            }
+        })
+        this.viewer.entities.add({
+            position: Cesium.Cartesian3.fromDegrees(110.27168617870922, 23.762128635513434),
+            name: "思旺镇",
+            ellipse: {
+                semiMinorAxis: 1000.0,
+                semiMajorAxis: 1000.0,
+                material: new Cesium.CircleDiffuseMaterialProperty({
+                    color: new Cesium.Color(2, 1, 0, 0.7),
+                    speed: 12.0,
+                })
+            }
+        })
+        this.viewer.entities.add({
+            position: Cesium.Cartesian3.fromDegrees(110.27168617870922, 23.762128635513434),
+            name: "思旺镇",
+            ellipse: {
+                semiMinorAxis: 1000.0,
+                semiMajorAxis: 1000.0,
+                material: new Cesium.CircleDiffuseMaterialProperty({
+                    color: new Cesium.Color(1, 1, 0, 0.7),
+                    speed: 12.0,
+                })
+            }
+        })
+        this.viewer.entities.add({
+            position: Cesium.Cartesian3.fromDegrees(109.28967775490543 ,23.31421043632404),
+            name: "樟木乡",
+            ellipse: {
+                semiMinorAxis: 2000.0,
+                semiMajorAxis: 2000.0,
+                material: new Cesium.CircleDiffuseMaterialProperty({
+                    color: new Cesium.Color(1, 1, 0, 0.3),
+                    speed: 12.0,
+                })
+            }
+        })
+        this.viewer.entities.add({
+            position: Cesium.Cartesian3.fromDegrees(110.49075678160175 ,23.7598675437059),
+            name: "同和镇",
+            ellipse: {
+                semiMinorAxis: 2000.0,
+                semiMajorAxis: 2000.0,
+                material: new Cesium.CircleDiffuseMaterialProperty({
+                    color: new Cesium.Color(1, 1, 0, 0.3),
+                    speed: 12.0,
+                })
+            }
+        })
+        this.viewer.entities.add({
+            position: Cesium.Cartesian3.fromDegrees(109.99069067072674, 23.531061908507187),
+            name: "国安瑶族乡",
+            ellipse: {
+                semiMinorAxis: 2000.0,
+                semiMajorAxis: 2000.0,
+                material: new Cesium.CircleDiffuseMaterialProperty({
+                    color: new Cesium.Color(1, 1, 0, 0.3),
+                    speed: 12.0,
+                })
+            }
+        })
+        this.viewer.entities.add({
+            position: Cesium.Cartesian3.fromDegrees(109.48337066370695 ,23.25103856735027),
+            name: "东龙镇",
+            ellipse: {
+                semiMinorAxis: 2000.0,
+                semiMajorAxis: 2000.0,
+                material: new Cesium.CircleDiffuseMaterialProperty({
+                    color: new Cesium.Color(1, 1, 0, 0.3),
+                    speed: 12.0,
+                })
+            }
+        })
+        this.viewer.entities.add({
+            position: Cesium.Cartesian3.fromDegrees(109.28828495816423 ,23.165398979064072),
+            name: "黄练镇",
+            ellipse: {
+                semiMinorAxis: 2000.0,
+                semiMajorAxis: 2000.0,
+                material: new Cesium.CircleDiffuseMaterialProperty({
+                    color: new Cesium.Color(1, 1, 0, 0.3),
+                    speed: 12.0,
+                })
+            }
+        })
+        this.viewer.entities.add({
+            position: Cesium.Cartesian3.fromDegrees(110.19096996064968 ,23.84358151846377),
+            name: "黄练镇",
+            ellipse: {
+                semiMinorAxis: 2000.0,
+                semiMajorAxis: 2000.0,
+                material: new Cesium.CircleDiffuseMaterialProperty({
+                    color: new Cesium.Color(1, 1, 0, 0.3),
+                    speed: 12.0,
+                })
+            }
+        })
+        this.viewer.entities.add({
+            position: Cesium.Cartesian3.fromDegrees(109.79486289419182 ,23.393919400959835),
+            name: "石龙镇",
+            ellipse: {
+                semiMinorAxis: 1000.0,
+                semiMajorAxis: 1000.0,
+                material: new Cesium.CircleDiffuseMaterialProperty({
+                    color: new Cesium.Color(1, 1, 0, 0.3),
+                    speed: 12.0,
+                })
+            }
+        })
+        this.viewer.entities.add({
+            position: Cesium.Cartesian3.fromDegrees(110.17058219176995 ,23.758318853223326),
+            name: "国安瑶族乡",
+            ellipse: {
+                semiMinorAxis: 2000.0,
+                semiMajorAxis: 2000.0,
+                material: new Cesium.CircleDiffuseMaterialProperty({
+                    color: new Cesium.Color(1, 1, 0, 0.3),
+                    speed: 12.0,
+                })
+            }
+        })
+    }
+            diffusion()
+
+   
+    //引用波动圆
+    function undulation() {
+        this.viewer.entities.add({
+                    position: Cesium.Cartesian3.fromDegrees(110.44928832756716 ,23.189988959150607),
+                    name: "波纹圆",
+                    ellipse: {
+                        semiMinorAxis: 2000.0,
+                        semiMajorAxis: 2000.0,
+                        material: new Cesium.CircleRippleMaterialProperty({
+                            color: new Cesium.Color(2, 0, 0, 0.7),
+                            speed: 12.0,
+                            count: 4,
+                            gradient: 0.2
+                        })
+                    }
+                })
+                this.viewer.entities.add({
+                    position: Cesium.Cartesian3.fromDegrees(109.61581956468781 ,22.727656088905306),
+                    name: "丹竹镇",
+                    ellipse: {
+                        semiMinorAxis: 2000.0,
+                        semiMajorAxis: 2000.0,
+                        material: new Cesium.CircleRippleMaterialProperty({
+                            color: new Cesium.Color(2, 0, 0, 0.7),
+                            speed: 12.0,
+                            count: 4,
+                            gradient: 0.2
+                        })
+                    }
+                })
+                this.viewer.entities.add({
+                    position: Cesium.Cartesian3.fromDegrees(110.05330891126378, 22.99626900495371),
+                    name: "罗播镇",
+                    ellipse: {
+                        semiMinorAxis: 2000.0,
+                        semiMajorAxis: 2000.0,
+                        material: new Cesium.CircleRippleMaterialProperty({
+                            color: new Cesium.Color(2, 0, 0, 0.7),
+                            speed: 12.0,
+                            count: 4,
+                            gradient: 0.2
+                        })
+                    }
+                })
+                this.viewer.entities.add({
+                    position: Cesium.Cartesian3.fromDegrees(110.49346733808689 ,23.287294878604595),
+                    name: "大新镇",
+                    ellipse: {
+                        semiMinorAxis: 2000.0,
+                        semiMajorAxis: 2000.0,
+                        material: new Cesium.CircleRippleMaterialProperty({
+                            color: new Cesium.Color(2, 0, 0, 0.7),
+                            speed: 12.0,
+                            count: 4,
+                            gradient: 0.2
+                        })
+                    }
+                })
+                this.viewer.entities.add({
+                    position: Cesium.Cartesian3.fromDegrees(110.21401253765653 ,23.004536225086973),
+                    name: "中沙镇",
+                    ellipse: {
+                        semiMinorAxis: 2000.0,
+                        semiMajorAxis: 2000.0,
+                        material: new Cesium.CircleRippleMaterialProperty({
+                            color: new Cesium.Color(2, 0, 0, 0.7),
+                            speed: 12.0,
+                            count: 4,
+                            gradient: 0.2
+                        })
+                    }
+                })
+                this.viewer.entities.add({
+                    position: Cesium.Cartesian3.fromDegrees(109.82253370742843, 23.05076426837755),
+                    name: "东津镇",
+                    ellipse: {
+                        semiMinorAxis: 2000.0,
+                        semiMajorAxis: 2000.0,
+                        material: new Cesium.CircleRippleMaterialProperty({
+                            color: new Cesium.Color(2, 0, 0, 0.7),
+                            speed: 12.0,
+                            count: 4,
+                            gradient: 0.2
+                        })
+                    }
+                })
+                this.viewer.entities.add({
+                    position: Cesium.Cartesian3.fromDegrees(110.18299740563702 ,22.94321314480807),
+                    name: "中沙镇",
+                    ellipse: {
+                        semiMinorAxis: 2000.0,
+                        semiMajorAxis: 2000.0,
+                        material: new Cesium.CircleRippleMaterialProperty({
+                            color: new Cesium.Color(2, 0, 0, 0.7),
+                            speed: 12.0,
+                            count: 4,
+                            gradient: 0.2
+                        })
+                    }
+                })
+                this.viewer.entities.add({
+                    position: Cesium.Cartesian3.fromDegrees(110.34674367062004 ,23.124934781222894),
+                    name: "六陈镇",
+                    ellipse: {
+                        semiMinorAxis: 2000.0,
+                        semiMajorAxis: 2000.0,
+                        material: new Cesium.CircleRippleMaterialProperty({
+                            color: new Cesium.Color(2, 0, 0, 0.7),
+                            speed: 12.0,
+                            count: 4,
+                            gradient: 0.2
+                        })
+                    }
+                })
+                this.viewer.entities.add({
+                    position: Cesium.Cartesian3.fromDegrees(110.55084810293593 ,23.417988776738692),
+                    name: "武林镇",
+                    ellipse: {
+                        semiMinorAxis: 2000.0,
+                        semiMajorAxis: 2000.0,
+                        material: new Cesium.CircleRippleMaterialProperty({
+                            color: new Cesium.Color(2, 0, 0, 0.7),
+                            speed: 12.0,
+                            count: 4,
+                            gradient: 0.2
+                        })
+                    }
+                })
+    }
+     undulation()
+    </script>
+</body>
+</html> 
